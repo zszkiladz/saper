@@ -1,13 +1,30 @@
-package pl.plauszta;
+package pl.plauszta.game;
 
 import java.util.Random;
 
 public class Game {
+
+    private static Game instance = new Game();
+
     private boolean[][] bombs;
-    int bombsNumber;
+    private int bombsNumber;
+    private DifficultyLevel difficultyLevel;
+    private int countHits = 0;
+
     Random random = new Random();
 
-    public Game(DifficultyLevel difficultyLevel) {
+    private Game(){
+        difficultyLevel = DifficultyLevel.EASY;
+        newGame();
+    }
+
+    public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
+        this.difficultyLevel = difficultyLevel;
+        newGame(difficultyLevel);
+    }
+
+    public void newGame(DifficultyLevel difficultyLevel) {
+        this.difficultyLevel = difficultyLevel;
         if (difficultyLevel == DifficultyLevel.EASY) {
             bombs = new boolean[8][8];
             bombsNumber = 10;
@@ -27,6 +44,17 @@ public class Game {
             } while (bombs[x][y]);
             bombs[x][y] = true;
         }
+    }
+
+    public void newGame(){
+        newGame(difficultyLevel);
+    }
+
+    public static Game getInstance() {
+        if (instance == null) {
+            instance = new Game();
+        }
+        return instance;
     }
 
     public Game(int sizeX, int sizeY, int bombsNumber) {
@@ -70,6 +98,15 @@ public class Game {
             }
         }
         return countBombs;
+    }
+
+    public void addHit(){
+        countHits++;
+    }
+
+    public boolean isOver() {
+        int notBombs = bombs.length * bombs[0].length - bombsNumber;
+        return countHits == notBombs;
     }
 }
 

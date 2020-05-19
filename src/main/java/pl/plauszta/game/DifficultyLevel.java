@@ -1,4 +1,4 @@
-package pl.plauszta;
+package pl.plauszta.game;
 
 public enum DifficultyLevel {
     EASY,
