@@ -1,10 +1,7 @@
 package pl.plauszta.gui;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Control;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 

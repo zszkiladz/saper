@@ -1,16 +1,19 @@
 package pl.plauszta.gui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Game;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
@@ -102,14 +105,48 @@ public class GameController implements Initializable {
         });
 
         customItem.setOnAction(event -> {
-            //TODO pokazać okno dialogowe do wprowadzenia wartości i stworzyć nową grę
-            try {
-                SceneChanger.changeScene(menuBar.getScene());
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            Dialog<CustomGameParams> dialog = makeCustomInputDialog();
+            Optional<CustomGameParams> parameters = dialog.showAndWait();
+            if (parameters.isPresent()) {
+                CustomGameParams customGameParams = parameters.get();
+                game.setCustomGame(customGameParams.getX(), customGameParams.getY(), customGameParams.getNumber());
+                try {
+                    SceneChanger.changeScene(menuBar.getScene());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
         return changeDifficultyItem;
+    }
+
+    private Dialog<CustomGameParams> makeCustomInputDialog() {
+        Dialog<CustomGameParams> dialog = new Dialog<>();
+        dialog.setTitle("Custom game");
+        dialog.setHeaderText("Please specify…");
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        Label rowsLabel = new Label("Enter number of rows");
+        TextField rowsNumber = new TextField();
+        Label columnsLabel = new Label("Enter number of columns");
+        TextField columnsNumber = new TextField();
+        Label minesNumberLabel = new Label("Enter number of mines");
+        TextField minesNumber = new TextField();
+
+        dialogPane.setContent(new VBox(6,
+                rowsLabel, rowsNumber,
+                columnsLabel, columnsNumber,
+                minesNumberLabel, minesNumber));
+        Platform.runLater(rowsNumber::requestFocus);
+        dialog.setResultConverter((ButtonType button) -> {
+            if (button == ButtonType.OK) {
+                return new CustomGameParams(Integer.parseInt(rowsNumber.getText()),
+                        Integer.parseInt(columnsNumber.getText()),
+                        Integer.parseInt(minesNumber.getText()));
+            }
+            return null;
+        });
+        return dialog;
     }
 
     private Menu prepareHelpMenu() {
