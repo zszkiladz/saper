@@ -115,6 +115,4 @@ buildNumber.properties
 .idea/jarRepositories.xml
 .idea/misc.xml
 .idea/sonarlint/
-pom.xml
 saper.iml
-src/
