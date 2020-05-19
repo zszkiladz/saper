@@ -45,8 +45,8 @@ public class GameController implements Initializable {
             game.newGame();
             try {
                 SceneChanger.changeScene(menuBar.getScene());
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
 
@@ -76,7 +76,7 @@ public class GameController implements Initializable {
         changeDifficultyItem.getItems().add(new SeparatorMenuItem());
         changeDifficultyItem.getItems().add(customItem);
 
-        easyItem.setOnAction(e -> {
+        easyItem.setOnAction(event -> {
             game.setDifficultyLevel(DifficultyLevel.EASY);
             try {
                 SceneChanger.changeScene(menuBar.getScene());
@@ -84,7 +84,7 @@ public class GameController implements Initializable {
                 ex.printStackTrace();
             }
         });
-        mediumItem.setOnAction(e -> {
+        mediumItem.setOnAction(event -> {
             game.setDifficultyLevel(DifficultyLevel.MEDIUM);
             try {
                 SceneChanger.changeScene(menuBar.getScene());
@@ -92,17 +92,23 @@ public class GameController implements Initializable {
                 ex.printStackTrace();
             }
         });
-        easyItem.setOnAction(e -> {
-            game.setDifficultyLevel(DifficultyLevel.EASY);
+        hardItem.setOnAction(event -> {
+            game.setDifficultyLevel(DifficultyLevel.HARD);
             try {
                 SceneChanger.changeScene(menuBar.getScene());
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         });
-        mediumItem.setOnAction(e -> System.out.println("mediumItem Selected"));
-        hardItem.setOnAction(e -> System.out.println("hardItem Selected"));
-        customItem.setOnAction(e -> System.out.println("customItem Selected"));
+
+        customItem.setOnAction(event -> {
+            //TODO pokazać okno dialogowe do wprowadzenia wartości i stworzyć nową grę
+            try {
+                SceneChanger.changeScene(menuBar.getScene());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
         return changeDifficultyItem;
     }
 
@@ -111,8 +117,20 @@ public class GameController implements Initializable {
         MenuItem howToPlayItem = new MenuItem("How to play...");
         MenuItem aboutAuthorItem = new MenuItem("About author");
 
-        howToPlayItem.setOnAction(e -> System.out.println("howToPlayItem Selected"));
-        aboutAuthorItem.setOnAction(e -> System.out.println("aboutAuthorItem Selected"));
+        howToPlayItem.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("How to play");
+            alert.setHeaderText(null);
+            alert.setContentText("~~Proste zasady gry~~");
+            alert.showAndWait();
+        });
+        aboutAuthorItem.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("About author");
+            alert.setHeaderText(null);
+            alert.setContentText("Plauszta Zuzanna\nhttps://github.com/zplauszta");
+            alert.showAndWait();
+        });
 
         helpMenu.getItems().add(howToPlayItem);
         helpMenu.getItems().add(aboutAuthorItem);

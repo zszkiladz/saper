@@ -13,7 +13,7 @@ public class Game {
 
     Random random = new Random();
 
-    private Game(){
+    private Game() {
         difficultyLevel = DifficultyLevel.EASY;
         newGame();
     }
@@ -21,6 +21,13 @@ public class Game {
     public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
         this.difficultyLevel = difficultyLevel;
         newGame(difficultyLevel);
+    }
+
+    public void setCustomGame(int sizeX, int sizeY, int bombsNumber) {
+        difficultyLevel = DifficultyLevel.CUSTOM;
+        bombs = new boolean[sizeX][sizeY];
+        this.bombsNumber = bombsNumber;
+        placeBombs();
     }
 
     public void newGame(DifficultyLevel difficultyLevel) {
@@ -31,10 +38,14 @@ public class Game {
         } else if (difficultyLevel == DifficultyLevel.MEDIUM) {
             bombs = new boolean[16][16];
             bombsNumber = 40;
-        } else {
+        } else if (difficultyLevel == DifficultyLevel.HARD) {
             bombs = new boolean[16][30];
             bombsNumber = 99;
         }
+        placeBombs();
+    }
+
+    private void placeBombs() {
         for (int i = 0; i < bombsNumber; i++) {
             int x;
             int y;
@@ -46,7 +57,7 @@ public class Game {
         }
     }
 
-    public void newGame(){
+    public void newGame() {
         newGame(difficultyLevel);
     }
 
@@ -55,11 +66,6 @@ public class Game {
             instance = new Game();
         }
         return instance;
-    }
-
-    public Game(int sizeX, int sizeY, int bombsNumber) {
-        bombs = new boolean[sizeX][sizeY];
-        this.bombsNumber = bombsNumber;
     }
 
     public boolean[][] getBombs() {
@@ -100,7 +106,7 @@ public class Game {
         return countBombs;
     }
 
-    public void addHit(){
+    public void addHit() {
         countHits++;
     }
 
