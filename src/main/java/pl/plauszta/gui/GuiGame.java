@@ -12,7 +12,7 @@ public class GuiGame extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        final URL homeResource = GuiGame.class.getClassLoader().getResource("easyGame.fxml");
+        final URL homeResource = GuiGame.class.getClassLoader().getResource("gameScene.fxml");
         final Pane homePane = FXMLLoader.load(homeResource);
         final Scene scene = new Scene(homePane);
         stage.setScene(scene);

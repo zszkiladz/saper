@@ -3,24 +3,124 @@ package pl.plauszta.gui;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Game;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
-    Game game = Game.getInstance();
+    @FXML
+    public MenuBar menuBar;
 
     @FXML
     public GridPane grid;
 
+    Game game = Game.getInstance();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        prepareGridOfGameBoard();
+        prepareMenuBar();
+    }
+
+    private void prepareMenuBar() {
+        Menu gameMenu = prepareGameMenu();
+        Menu helpMenu = prepareHelpMenu();
+
+        menuBar.getMenus().add(gameMenu);
+        menuBar.getMenus().add(helpMenu);
+    }
+
+    private Menu prepareGameMenu() {
+        Menu gameMenu = new Menu("Game");
+
+        MenuItem newGameItem = new MenuItem("New Game");
+        newGameItem.setOnAction(event -> {
+            game.newGame();
+            try {
+                SceneChanger.changeScene(menuBar.getScene());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        Menu changeDifficultyItem = prepareChangeDifficultyMenu();
+
+        gameMenu.getItems().add(newGameItem);
+        gameMenu.getItems().add(changeDifficultyItem);
+        return gameMenu;
+    }
+
+    private Menu prepareChangeDifficultyMenu() {
+        Menu changeDifficultyItem = new Menu("Change difficulty");
+        RadioMenuItem easyItem = new RadioMenuItem("Easy");
+        RadioMenuItem mediumItem = new RadioMenuItem("Medium");
+        RadioMenuItem hardItem = new RadioMenuItem("Hard");
+        RadioMenuItem customItem = new RadioMenuItem("Custom");
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+        toggleGroup.getToggles().add(easyItem);
+        toggleGroup.getToggles().add(mediumItem);
+        toggleGroup.getToggles().add(hardItem);
+        toggleGroup.getToggles().add(customItem);
+
+        changeDifficultyItem.getItems().add(easyItem);
+        changeDifficultyItem.getItems().add(mediumItem);
+        changeDifficultyItem.getItems().add(hardItem);
+        changeDifficultyItem.getItems().add(new SeparatorMenuItem());
+        changeDifficultyItem.getItems().add(customItem);
+
+        easyItem.setOnAction(e -> {
+            game.setDifficultyLevel(DifficultyLevel.EASY);
+            try {
+                SceneChanger.changeScene(menuBar.getScene());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        mediumItem.setOnAction(e -> {
+            game.setDifficultyLevel(DifficultyLevel.MEDIUM);
+            try {
+                SceneChanger.changeScene(menuBar.getScene());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        easyItem.setOnAction(e -> {
+            game.setDifficultyLevel(DifficultyLevel.EASY);
+            try {
+                SceneChanger.changeScene(menuBar.getScene());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        mediumItem.setOnAction(e -> System.out.println("mediumItem Selected"));
+        hardItem.setOnAction(e -> System.out.println("hardItem Selected"));
+        customItem.setOnAction(e -> System.out.println("customItem Selected"));
+        return changeDifficultyItem;
+    }
+
+    private Menu prepareHelpMenu() {
+        Menu helpMenu = new Menu("Help");
+        MenuItem howToPlayItem = new MenuItem("How to play...");
+        MenuItem aboutAuthorItem = new MenuItem("About author");
+
+        howToPlayItem.setOnAction(e -> System.out.println("howToPlayItem Selected"));
+        aboutAuthorItem.setOnAction(e -> System.out.println("aboutAuthorItem Selected"));
+
+        helpMenu.getItems().add(howToPlayItem);
+        helpMenu.getItems().add(aboutAuthorItem);
+        return helpMenu;
+    }
+
+    private void prepareGridOfGameBoard() {
+        grid.getChildren().removeAll();
         for (int i = 0; i < game.getBombs()[0].length; i++) {
             for (int j = 0; j < game.getBombs().length; j++) {
                 Button button = new Button();
