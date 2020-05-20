@@ -115,5 +115,9 @@ public class Game {
         int notMines = mines.length * mines[0].length - minesNumber;
         return countHits == notMines;
     }
+
+    public DifficultyLevel getDifficultyLevel() {
+        return difficultyLevel;
+    }
 }
 

@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Game;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -46,11 +45,7 @@ public class GameController implements Initializable {
         MenuItem newGameItem = new MenuItem("New Game");
         newGameItem.setOnAction(event -> {
             game.newGame();
-            try {
-                SceneChanger.changeScene(menuBar.getScene());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            SceneChanger.changeScene(menuBar.getScene());
         });
 
         Menu changeDifficultyItem = prepareChangeDifficultyMenu();
@@ -67,6 +62,8 @@ public class GameController implements Initializable {
         RadioMenuItem hardItem = new RadioMenuItem("Hard");
         RadioMenuItem customItem = new RadioMenuItem("Custom");
 
+        setSelectedRadioItem(easyItem, mediumItem, hardItem, customItem);
+
         ToggleGroup toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().add(easyItem);
         toggleGroup.getToggles().add(mediumItem);
@@ -79,48 +76,64 @@ public class GameController implements Initializable {
         changeDifficultyItem.getItems().add(new SeparatorMenuItem());
         changeDifficultyItem.getItems().add(customItem);
 
+        setActionsOnRadioItems(easyItem, mediumItem, hardItem, customItem);
+        return changeDifficultyItem;
+    }
+
+    private void setActionsOnRadioItems(RadioMenuItem easyItem, RadioMenuItem mediumItem,
+                                        RadioMenuItem hardItem, RadioMenuItem customItem) {
         easyItem.setOnAction(event -> {
             game.setDifficultyLevel(DifficultyLevel.EASY);
-            try {
-                SceneChanger.changeScene(menuBar.getScene());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
-        mediumItem.setOnAction(event -> {
-            game.setDifficultyLevel(DifficultyLevel.MEDIUM);
-            try {
-                SceneChanger.changeScene(menuBar.getScene());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
-        hardItem.setOnAction(event -> {
-            game.setDifficultyLevel(DifficultyLevel.HARD);
-            try {
-                SceneChanger.changeScene(menuBar.getScene());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            SceneChanger.changeScene(menuBar.getScene());
         });
 
+        mediumItem.setOnAction(event -> {
+            game.setDifficultyLevel(DifficultyLevel.MEDIUM);
+            SceneChanger.changeScene(menuBar.getScene());
+        });
+
+        hardItem.setOnAction(event -> {
+            game.setDifficultyLevel(DifficultyLevel.HARD);
+            SceneChanger.changeScene(menuBar.getScene());
+        });
+
+        setCustomGameAction(easyItem, mediumItem, hardItem, customItem);
+    }
+
+    private void setCustomGameAction(RadioMenuItem easyItem, RadioMenuItem mediumItem, RadioMenuItem hardItem, RadioMenuItem customItem) {
         customItem.setOnAction(event -> {
             Dialog<CustomGameParams> dialog = makeCustomInputDialog();
             Optional<CustomGameParams> parameters = dialog.showAndWait();
             if (parameters.isPresent()) {
                 CustomGameParams customGameParams = parameters.get();
-                game.setCustomGame(customGameParams.getX(), customGameParams.getY(), customGameParams.getNumber());
-                try {
-                    SceneChanger.changeScene(menuBar.getScene());
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                while (customGameParams.getX() == 0) {
+                    parameters = dialog.showAndWait();
+                    if (!parameters.isPresent()) {
+                        setSelectedRadioItem(easyItem, mediumItem, hardItem, customItem);
+                        return;
+                    }
+                    customGameParams = parameters.get();
                 }
+                game.setCustomGame(customGameParams.getX(), customGameParams.getY(), customGameParams.getNumber());
+                SceneChanger.changeScene(menuBar.getScene());
             }
+            setSelectedRadioItem(easyItem, mediumItem, hardItem, customItem);
         });
-        return changeDifficultyItem;
     }
 
-    private Dialog<CustomGameParams> makeCustomInputDialog() { //TODO add validation of params
+    private void setSelectedRadioItem(RadioMenuItem easyItem, RadioMenuItem mediumItem, RadioMenuItem hardItem, RadioMenuItem customItem) {
+        if (game.getDifficultyLevel() == DifficultyLevel.EASY) {
+            easyItem.setSelected(true);
+        } else if (game.getDifficultyLevel() == DifficultyLevel.MEDIUM) {
+            mediumItem.setSelected(true);
+        } else if (game.getDifficultyLevel() == DifficultyLevel.HARD) {
+            hardItem.setSelected(true);
+        } else {
+            customItem.setSelected(true);
+        }
+    }
+
+    private Dialog<CustomGameParams> makeCustomInputDialog() {
         Dialog<CustomGameParams> dialog = new Dialog<>();
         dialog.setTitle("Custom game");
         dialog.setHeaderText("Please specify…");
@@ -132,21 +145,44 @@ public class GameController implements Initializable {
         TextField columnsNumber = new TextField();
         Label minesNumberLabel = new Label("Enter number of mines");
         TextField minesNumber = new TextField();
-
         dialogPane.setContent(new VBox(6,
                 rowsLabel, rowsNumber,
                 columnsLabel, columnsNumber,
                 minesNumberLabel, minesNumber));
+
         Platform.runLater(rowsNumber::requestFocus);
         dialog.setResultConverter((ButtonType button) -> {
             if (button == ButtonType.OK) {
-                return new CustomGameParams(Integer.parseInt(rowsNumber.getText()),
-                        Integer.parseInt(columnsNumber.getText()),
-                        Integer.parseInt(minesNumber.getText()));
+                int rows = Integer.parseInt(rowsNumber.getText());
+                int columns = Integer.parseInt(columnsNumber.getText());
+                int mines = Integer.parseInt(minesNumber.getText());
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Wrong numbers");
+
+                if (rows < 1 || columns < 1 || mines < 1) {
+                    alert.setContentText("These numbers should be greater than 0!");
+                    alert.showAndWait();
+                    return new CustomGameParams(0, 0, 0);
+                }
+                if (!checkInput(rows, columns, mines)) {
+                    int maxMines = (rows - 1) * (columns - 1);
+
+                    alert.setContentText("With that board sizes, the maximum number of mines is " + maxMines);
+                    alert.showAndWait();
+                    return new CustomGameParams(0, 0, 0);
+                } else {
+                    return new CustomGameParams(rows, columns, mines);
+                }
             }
             return null;
         });
         return dialog;
+    }
+
+    private boolean checkInput(int rowsNumber, int columnsNumber, int minesNumber) {
+        int maxMines = (rowsNumber - 1) * (columnsNumber - 1);
+        return minesNumber <= maxMines;
     }
 
     private Menu prepareHelpMenu() {
@@ -159,7 +195,7 @@ public class GameController implements Initializable {
             alert.setTitle("How to play");
             alert.setHeaderText(null);
             alert.setContentText("Clear board without detonating mines. Each of the discovered fields has the number of mines that are in direct contact with the field (from zero to eight)."
-                    +"\n\nYou can mark the position of the mine with the flag by clicking the right mouse button."
+                    + "\n\nYou can mark the position of the mine with the flag by clicking the right mouse button."
                     + "\n\nIf field containing a mine is revealed, the player loses the game.");
             alert.showAndWait();
         });
@@ -267,7 +303,12 @@ public class GameController implements Initializable {
 
     private void lockButtons() {
         for (Node child : grid.getChildren()) {
-            child.setDisable(true);
+            Button button = (Button) child;
+            button.setDisable(true);
+            String[] choord = button.getId().split(" ");
+            if (game.getMines()[Integer.parseInt(choord[0])][Integer.parseInt(choord[1])]) {
+                button.setText("X");
+            }
         }
     }
 

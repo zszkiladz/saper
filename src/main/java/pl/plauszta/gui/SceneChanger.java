@@ -13,12 +13,19 @@ public class SceneChanger {
     private SceneChanger() {
     }
 
-    static void changeScene(Scene scene) throws IOException {
-        Stage stage = (Stage) scene.getWindow();
-        final URL resource = GuiGame.class.getClassLoader().getResource("gameScene.fxml");
-        final Pane pane = FXMLLoader.load(resource);
-        final Scene newScene = new Scene(pane);
-        stage.setScene(newScene);
-        stage.show();
+    static void changeScene(Scene scene) {
+        try {
+            Stage stage = (Stage) scene.getWindow();
+            final URL resource = GuiGame.class.getClassLoader().getResource("gameScene.fxml");
+            if (resource == null) {
+                return;
+            }
+            final Pane pane = FXMLLoader.load(resource);
+            final Scene newScene = new Scene(pane);
+            stage.setScene(newScene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

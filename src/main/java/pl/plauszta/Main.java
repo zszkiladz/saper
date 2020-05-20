@@ -7,8 +7,6 @@ import pl.plauszta.gui.GuiGame;
 
 public class Main {
     public static void main(String[] args) {
-        Game.getInstance().setDifficultyLevel(DifficultyLevel.EASY);
-
         Application.launch(GuiGame.class);
     }
 }
