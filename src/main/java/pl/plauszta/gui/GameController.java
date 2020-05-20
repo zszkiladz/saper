@@ -27,7 +27,7 @@ public class GameController implements Initializable {
     Game game = Game.getInstance();
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL url, ResourceBundle resourceBundle) { //TODO add timer and progress
         prepareGridOfGameBoard();
         prepareMenuBar();
     }
@@ -120,7 +120,7 @@ public class GameController implements Initializable {
         return changeDifficultyItem;
     }
 
-    private Dialog<CustomGameParams> makeCustomInputDialog() {
+    private Dialog<CustomGameParams> makeCustomInputDialog() { //TODO add validation of params
         Dialog<CustomGameParams> dialog = new Dialog<>();
         dialog.setTitle("Custom game");
         dialog.setHeaderText("Please specify…");
@@ -158,7 +158,9 @@ public class GameController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("How to play");
             alert.setHeaderText(null);
-            alert.setContentText("~~Proste zasady gry~~");
+            alert.setContentText("Clear board without detonating mines. Each of the discovered fields has the number of mines that are in direct contact with the field (from zero to eight)."
+                    +"\n\nYou can mark the position of the mine with the flag by clicking the right mouse button."
+                    + "\n\nIf field containing a mine is revealed, the player loses the game.");
             alert.showAndWait();
         });
         aboutAuthorItem.setOnAction(event -> {
@@ -174,17 +176,17 @@ public class GameController implements Initializable {
         return helpMenu;
     }
 
-    private void prepareGridOfGameBoard() {
+    private void prepareGridOfGameBoard() { //TODO make first reavel cant be mine
         grid.getChildren().removeAll();
-        for (int i = 0; i < game.getBombs()[0].length; i++) {
-            for (int j = 0; j < game.getBombs().length; j++) {
+        for (int i = 0; i < game.getMines()[0].length; i++) {
+            for (int j = 0; j < game.getMines().length; j++) {
                 Button button = new Button();
                 button.setPrefWidth(30);
                 button.setPrefHeight(30);
                 button.setId("" + j + " " + i);
                 button.setOnMouseClicked(event -> {
                     if (event.getButton() == MouseButton.PRIMARY) {
-                        doAction(button);
+                        updateBoard(button);
                     } else if (event.getButton() == MouseButton.SECONDARY) {
                         changeFlag(button);
                     }
@@ -198,7 +200,7 @@ public class GameController implements Initializable {
         button.setText(button.getText().equals("F") ? "" : "F");
     }
 
-    private void doAction(Button button) {
+    private void updateBoard(Button button) {
         if ("F".equals(button.getText())) {
             return;
         }
@@ -206,13 +208,10 @@ public class GameController implements Initializable {
         int xButton = Integer.parseInt(coords[0]);
         int yButton = Integer.parseInt(coords[1]);
 
-        if (game.getBombs()[xButton][yButton]) {
-            button.setText("X");
-            lockButtons();
-            showEndAlert("You lose!");
+        if (game.getMines()[xButton][yButton]) {
+            endGame(button);
         } else {
-            updateBoard(button, xButton, yButton);
-
+            updateButton(button, xButton, yButton);
             if (gameIsOver()) {
                 lockButtons();
                 showEndAlert("You win!");
@@ -220,13 +219,19 @@ public class GameController implements Initializable {
         }
     }
 
-    private void updateBoard(Button button, int xButton, int yButton) {
+    private void endGame(Button button) {
+        button.setText("X");
+        lockButtons();
+        showEndAlert("You lose!");
+    }
+
+    private void updateButton(Button button, int xButton, int yButton) {
         game.addHit();
-        int bombs = game.getGameBoard()[xButton][yButton];
-        button.setText(bombs + "");
+        int mines = game.getGameBoard()[xButton][yButton];
+        button.setText(mines + "");
         button.setDisable(true);
 
-        if (bombs == 0) {
+        if (mines == 0) {
             expandAllBlanks(xButton, yButton);
         }
     }
@@ -234,8 +239,8 @@ public class GameController implements Initializable {
     private void expandAllBlanks(int xButton, int yButton) {
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
-                boolean inBounds = xButton + i >= 0 && xButton + i < game.getBombs()[0].length
-                        && yButton + j >= 0 && yButton + j < game.getBombs().length;
+                boolean inBounds = xButton + i >= 0 && xButton + i < game.getMines()[0].length
+                        && yButton + j >= 0 && yButton + j < game.getMines().length;
                 boolean isCurrentButton = i == 0 && j == 0;
                 if (inBounds && !isCurrentButton) {
                     updateNeighbouringButton(xButton + i, yButton + j);
@@ -247,7 +252,7 @@ public class GameController implements Initializable {
     private void updateNeighbouringButton(int xButton, int yButton) {
         Button neighbourButton = (Button) getNodeFromGridPane(xButton, yButton);
         if (neighbourButton != null && !neighbourButton.isDisable()) {
-            updateBoard(neighbourButton, xButton, yButton);
+            updateButton(neighbourButton, xButton, yButton);
         }
     }
 

@@ -6,8 +6,8 @@ public class Game {
 
     private static Game instance = new Game();
 
-    private boolean[][] bombs;
-    private int bombsNumber;
+    private boolean[][] mines;
+    private int minesNumber;
     private DifficultyLevel difficultyLevel;
     private int countHits;
 
@@ -23,38 +23,38 @@ public class Game {
         newGame(difficultyLevel);
     }
 
-    public void setCustomGame(int sizeX, int sizeY, int bombsNumber) {
+    public void setCustomGame(int sizeX, int sizeY, int minesNumber) {
         difficultyLevel = DifficultyLevel.CUSTOM;
-        bombs = new boolean[sizeX][sizeY];
-        this.bombsNumber = bombsNumber;
-        placeBombs();
+        mines = new boolean[sizeX][sizeY];
+        this.minesNumber = minesNumber;
+        placeMines();
     }
 
     public void newGame(DifficultyLevel difficultyLevel) {
         this.difficultyLevel = difficultyLevel;
         countHits = 0;
         if (difficultyLevel == DifficultyLevel.EASY) {
-            bombs = new boolean[8][8];
-            bombsNumber = 10;
+            mines = new boolean[8][8];
+            minesNumber = 10;
         } else if (difficultyLevel == DifficultyLevel.MEDIUM) {
-            bombs = new boolean[16][16];
-            bombsNumber = 40;
+            mines = new boolean[16][16];
+            minesNumber = 40;
         } else if (difficultyLevel == DifficultyLevel.HARD) {
-            bombs = new boolean[16][30];
-            bombsNumber = 99;
+            mines = new boolean[16][30];
+            minesNumber = 99;
         }
-        placeBombs();
+        placeMines();
     }
 
-    private void placeBombs() {
-        for (int i = 0; i < bombsNumber; i++) {
+    private void placeMines() {
+        for (int i = 0; i < minesNumber; i++) {
             int x;
             int y;
             do {
-                x = random.nextInt(bombs.length);
-                y = random.nextInt(bombs[0].length);
-            } while (bombs[x][y]);
-            bombs[x][y] = true;
+                x = random.nextInt(mines.length);
+                y = random.nextInt(mines[0].length);
+            } while (mines[x][y]);
+            mines[x][y] = true;
         }
     }
 
@@ -69,42 +69,42 @@ public class Game {
         return instance;
     }
 
-    public boolean[][] getBombs() {
-        return bombs;
+    public boolean[][] getMines() {
+        return mines;
     }
 
     public int[][] getGameBoard() {
-        int[][] table = new int[bombs.length][bombs[0].length];
+        int[][] table = new int[mines.length][mines[0].length];
         for (int i = 0; i < table.length; i++) {
             int[] rows = table[i];
             for (int j = 0; j < rows.length; j++) {
-                if (bombs[i][j]) {
+                if (mines[i][j]) {
                     table[i][j] = -1;
                     continue;
                 }
-                int countBombs = getNumberOfBombs(i, j);
-                table[i][j] = countBombs;
+                int countMines = getNumberOfMines(i, j);
+                table[i][j] = countMines;
             }
         }
 
         return table;
     }
 
-    private int getNumberOfBombs(int i, int j) {
-        int countBombs = 0;
+    private int getNumberOfMines(int i, int j) {
+        int countMines = 0;
         for (int k = -1; k < 2; k++) {
             for (int l = -1; l < 2; l++) {
                 boolean isInBounds = i + k >= 0 && j + l >= 0
-                        && i + k < bombs.length && j + l < bombs[0].length;
+                        && i + k < mines.length && j + l < mines[0].length;
                 boolean isCenter = k == 0 && l == 0;
                 if (isInBounds
                         && !isCenter
-                        && bombs[i + k][j + l]) {
-                    countBombs++;
+                        && mines[i + k][j + l]) {
+                    countMines++;
                 }
             }
         }
-        return countBombs;
+        return countMines;
     }
 
     public void addHit() {
@@ -112,8 +112,8 @@ public class Game {
     }
 
     public boolean isOver() {
-        int notBombs = bombs.length * bombs[0].length - bombsNumber;
-        return countHits == notBombs;
+        int notMines = mines.length * mines[0].length - minesNumber;
+        return countHits == notMines;
     }
 }
 
