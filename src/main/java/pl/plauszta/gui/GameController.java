@@ -211,15 +211,60 @@ public class GameController implements Initializable {
             lockButtons();
             showEndAlert("You lose!");
         } else {
-            game.addHit();
-            int bombs = game.getGameBoard()[xButton][yButton];
-            button.setText(bombs + "");
+            updateBoard(button, xButton, yButton);
+
             if (gameIsOver()) {
                 lockButtons();
                 showEndAlert("You win!");
             }
         }
+    }
+
+    private void updateBoard(Button button, int xButton, int yButton) {
+        if(button.isDisable()){
+            return;
+        }
+        game.addHit();
+        int bombs = game.getGameBoard()[xButton][yButton];
+        button.setText(bombs + "");
         button.setDisable(true);
+
+        if (bombs == 0) {
+            Button neighbourButton;
+            if (xButton - 1 >= 0) {
+                neighbourButton = (Button) getNodeFromGridPane(grid, xButton - 1, yButton);
+                if (neighbourButton != null && !neighbourButton.isDisable()) {
+                    updateBoard(neighbourButton, xButton - 1, yButton);
+                }
+            }
+            if (xButton + 1 < game.getBombs().length) {
+                neighbourButton = (Button) getNodeFromGridPane(grid, xButton + 1, yButton);
+                if (neighbourButton != null &&!neighbourButton.isDisable()) {
+                    updateBoard(neighbourButton, xButton + 1, yButton);
+                }
+            }
+            if (yButton - 1 >= 0) {
+                neighbourButton = (Button) getNodeFromGridPane(grid, xButton, yButton - 1);
+                if (neighbourButton != null &&!neighbourButton.isDisable()) {
+                    updateBoard(neighbourButton, xButton, yButton - 1);
+                }
+            }
+            if (yButton + 1 < game.getBombs()[0].length) {
+                neighbourButton = (Button) getNodeFromGridPane(grid, xButton, yButton + 1);
+                if (neighbourButton != null &&!neighbourButton.isDisable()) {
+                    updateBoard(neighbourButton, xButton, yButton + 1);
+                }
+            }
+        }
+    }
+
+    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+        for (Node node : gridPane.getChildren()) {
+            if (Integer.parseInt(node.getId().split(" ")[0]) == col && Integer.parseInt(node.getId().split(" ")[1]) == row) {
+                return node;
+            }
+        }
+        return null;
     }
 
     private void lockButtons() {
