@@ -9,17 +9,17 @@ public class Game {
     private boolean[][] bombs;
     private int bombsNumber;
     private DifficultyLevel difficultyLevel;
-    private int countHits = 0;
+    private int countHits;
 
     Random random = new Random();
 
     private Game() {
         difficultyLevel = DifficultyLevel.EASY;
+        countHits = 0;
         newGame();
     }
 
     public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
-        this.difficultyLevel = difficultyLevel;
         newGame(difficultyLevel);
     }
 
@@ -32,6 +32,7 @@ public class Game {
 
     public void newGame(DifficultyLevel difficultyLevel) {
         this.difficultyLevel = difficultyLevel;
+        countHits = 0;
         if (difficultyLevel == DifficultyLevel.EASY) {
             bombs = new boolean[8][8];
             bombsNumber = 10;

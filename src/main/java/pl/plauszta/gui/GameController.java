@@ -221,45 +221,38 @@ public class GameController implements Initializable {
     }
 
     private void updateBoard(Button button, int xButton, int yButton) {
-        if(button.isDisable()){
-            return;
-        }
         game.addHit();
         int bombs = game.getGameBoard()[xButton][yButton];
         button.setText(bombs + "");
         button.setDisable(true);
 
         if (bombs == 0) {
-            Button neighbourButton;
-            if (xButton - 1 >= 0) {
-                neighbourButton = (Button) getNodeFromGridPane(grid, xButton - 1, yButton);
-                if (neighbourButton != null && !neighbourButton.isDisable()) {
-                    updateBoard(neighbourButton, xButton - 1, yButton);
-                }
-            }
-            if (xButton + 1 < game.getBombs().length) {
-                neighbourButton = (Button) getNodeFromGridPane(grid, xButton + 1, yButton);
-                if (neighbourButton != null &&!neighbourButton.isDisable()) {
-                    updateBoard(neighbourButton, xButton + 1, yButton);
-                }
-            }
-            if (yButton - 1 >= 0) {
-                neighbourButton = (Button) getNodeFromGridPane(grid, xButton, yButton - 1);
-                if (neighbourButton != null &&!neighbourButton.isDisable()) {
-                    updateBoard(neighbourButton, xButton, yButton - 1);
-                }
-            }
-            if (yButton + 1 < game.getBombs()[0].length) {
-                neighbourButton = (Button) getNodeFromGridPane(grid, xButton, yButton + 1);
-                if (neighbourButton != null &&!neighbourButton.isDisable()) {
-                    updateBoard(neighbourButton, xButton, yButton + 1);
+            expandAllBlanks(xButton, yButton);
+        }
+    }
+
+    private void expandAllBlanks(int xButton, int yButton) {
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                boolean inBounds = xButton + i >= 0 && xButton + i < game.getBombs()[0].length
+                        && yButton + j >= 0 && yButton + j < game.getBombs().length;
+                boolean isCurrentButton = i == 0 && j == 0;
+                if (inBounds && !isCurrentButton) {
+                    updateNeighbouringButton(xButton + i, yButton + j);
                 }
             }
         }
     }
 
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-        for (Node node : gridPane.getChildren()) {
+    private void updateNeighbouringButton(int xButton, int yButton) {
+        Button neighbourButton = (Button) getNodeFromGridPane(xButton, yButton);
+        if (neighbourButton != null && !neighbourButton.isDisable()) {
+            updateBoard(neighbourButton, xButton, yButton);
+        }
+    }
+
+    private Node getNodeFromGridPane(int col, int row) {
+        for (Node node : grid.getChildren()) {
             if (Integer.parseInt(node.getId().split(" ")[0]) == col && Integer.parseInt(node.getId().split(" ")[1]) == row) {
                 return node;
             }
