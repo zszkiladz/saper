@@ -1,17 +1,30 @@
 package pl.plauszta.game;
 
+import javax.xml.bind.annotation.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@XmlRootElement()
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Records implements Serializable {
 
     private static Records instance;
 
-    private final List<Record> recordsList;
+    @XmlElements(@XmlElement)
+    private final List<Record> easyRecords;
+    @XmlElements(@XmlElement)
+    private final List<Record> mediumRecords;
+    @XmlElements(@XmlElement)
+    private final List<Record> hardRecords;
 
     private Records() {
-        this.recordsList = new ArrayList<>();
+        this.easyRecords = new ArrayList<>();
+        this.mediumRecords = new ArrayList<>();
+        this.hardRecords = new ArrayList<>();
     }
 
     public static Records getInstance() {
@@ -22,16 +35,25 @@ public class Records implements Serializable {
     }
 
     public void addRecord(Record record) {
-        recordsList.add(record);
+        easyRecords.add(record);
+        easyRecords.sort(Record::compareTo);
+    }
+
+    public void addRecords(List<Record> records) {
+        easyRecords.addAll(records);
+        //easyRecords.sort(Record::compareTo);
     }
 
     public void addRecord(int time) {
-        recordsList.add(new Record("Anonim", time));
+        easyRecords.add(new Record("Anonim", time));
+        easyRecords.sort(Record::compareTo);
     }
 
-    public List<Record> getRecordsList() {
-        return recordsList;
+    public List<Record> getEasyRecords() {
+        return easyRecords;
     }
 
-
+    public void show() {
+        easyRecords.forEach(System.out::println);
+    }
 }

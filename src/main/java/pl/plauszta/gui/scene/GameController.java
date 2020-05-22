@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
@@ -13,12 +14,14 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import pl.plauszta.game.Game;
+import pl.plauszta.game.Record;
 import pl.plauszta.game.Records;
 import pl.plauszta.gui.scene.button.BoardButton;
 import pl.plauszta.gui.scene.button.Status;
 
 import java.net.URL;
 import java.time.LocalTime;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
@@ -101,7 +104,16 @@ public class GameController implements Initializable {
                 String timeString = time.getText();
                 int stopTime = LocalTime.parse(timeString).toSecondOfDay();
                 endGame("You win!\nTime: " + timeString, timeString);
-                Records.getInstance().addRecord(stopTime);
+
+                TextInputDialog dialog = new TextInputDialog("Anonim");
+                dialog.setTitle("Game end");
+                dialog.setHeaderText("You win!\nTime: " + timeString);
+                dialog.setContentText("Please enter your name:");
+                Optional<String> result = dialog.showAndWait();
+                result.ifPresent(name -> {
+                    Records.getInstance().addRecord(new Record(name, stopTime));
+                });
+
             }
         }
     }

@@ -5,8 +5,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Game;
+import pl.plauszta.game.Record;
+import pl.plauszta.game.Records;
 import pl.plauszta.gui.CustomGameParams;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 public class MenuBarMaker {
@@ -28,7 +31,19 @@ public class MenuBarMaker {
 
         MenuItem showRecordsItem = new MenuItem("Show Records");
         showRecordsItem.setOnAction(event -> {
-            //TODO showing records
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Records");
+            alert.setHeaderText(null);
+            alert.getDialogPane().setPrefWidth(230);
+            StringBuilder sb = new StringBuilder("");
+            for (Record record : Records.getInstance().getEasyRecords()) {
+                int time = record.getTime();
+                sb.append(LocalTime.parse("00:00:00").plusSeconds(time)).append(" ").append(record.getName()).append("\n");
+            }
+            alert.setContentText(sb.toString());
+
+            alert.showAndWait();
+
         });
 
         MenuItem resetRecordsItem = new MenuItem("Reset Records");
