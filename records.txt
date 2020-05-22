@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <records>
+    <easyRecords name="Anonim" time="18"/>
+    <easyRecords name="Anonim" time="18"/>
     <easyRecords name="Zuza" time="19"/>
     <easyRecords name="Anonim" time="19"/>
     <easyRecords name="Jan" time="20"/>
     <easyRecords name="Anonim" time="20"/>
     <easyRecords name="Anonim" time="22"/>
     <easyRecords name="Anonim" time="23"/>
+    <easyRecords name="Anonim" time="24"/>
     <easyRecords name="Anonim" time="24"/>
     <easyRecords name="Anonim" time="26"/>
     <easyRecords name="Anonim" time="29"/>
@@ -14,6 +17,8 @@
     <easyRecords name="Anonim" time="32"/>
     <easyRecords name="bartel" time="37"/>
     <easyRecords name="Anonim" time="39"/>
+    <easyRecords name="Anonim" time="43"/>
     <easyRecords name="Lizak" time="167"/>
     <mediumRecords name="zuziks" time="80"/>
+    <hardRecords name="zuza" time="178"/>
 </records>

@@ -40,7 +40,7 @@ public class Game {
             mines = new boolean[16][16];
             minesNumber = 40;
         } else if (difficultyLevel == DifficultyLevel.HARD) {
-            mines = new boolean[16][30];
+            mines = new boolean[30][16];
             minesNumber = 99;
         }
         placeMines();
@@ -76,8 +76,7 @@ public class Game {
     public int[][] getGameBoard() {
         int[][] table = new int[mines.length][mines[0].length];
         for (int i = 0; i < table.length; i++) {
-            int[] rows = table[i];
-            for (int j = 0; j < rows.length; j++) {
+            for (int j = 0; j < table[0].length; j++) {
                 if (mines[i][j]) {
                     table[i][j] = -1;
                     continue;

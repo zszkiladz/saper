@@ -15,7 +15,7 @@ public class GuiGame extends Application {
         final URL homeResource = GuiGame.class.getClassLoader().getResource("gameScene.fxml");
         final Pane homePane = FXMLLoader.load(homeResource);
         final Scene scene = new Scene(homePane);
-        scene.getStylesheets().add("test.css");
+        scene.getStylesheets().add("scene.css");
         stage.setScene(scene);
         stage.setTitle("Saper");
         stage.setResizable(false);

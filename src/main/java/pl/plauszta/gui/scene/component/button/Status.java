@@ -1,4 +1,4 @@
-package pl.plauszta.gui.scene.button;
+package pl.plauszta.gui.scene.component.button;
 
 public enum Status {
     UNMARKED,

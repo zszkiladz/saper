@@ -23,7 +23,7 @@ public class SceneChanger {
             }
             final Pane pane = FXMLLoader.load(resource);
             final Scene newScene = new Scene(pane);
-            newScene.getStylesheets().add("test.css");
+            newScene.getStylesheets().add("scene.css");
             stage.setScene(newScene);
             stage.show();
         } catch (IOException e) {

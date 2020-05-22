@@ -1,10 +1,6 @@
 package pl.plauszta.game;
 
 import javax.xml.bind.annotation.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
