@@ -10,7 +10,7 @@ import java.util.List;
 
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Records implements Serializable {
+public class Records {
 
     private static Records instance;
 
@@ -34,26 +34,63 @@ public class Records implements Serializable {
         return instance;
     }
 
-    public void addRecord(Record record) {
-        easyRecords.add(record);
+    public void addRecord(Record record, DifficultyLevel difficultyLevel) {
+        if (difficultyLevel == DifficultyLevel.EASY) {
+            easyRecords.add(record);
+        } else if (difficultyLevel == DifficultyLevel.MEDIUM) {
+            mediumRecords.add(record);
+        } else if (difficultyLevel == DifficultyLevel.HARD) {
+            hardRecords.add(record);
+        }
         easyRecords.sort(Record::compareTo);
     }
 
-    public void addRecords(List<Record> records) {
-        easyRecords.addAll(records);
-        //easyRecords.sort(Record::compareTo);
+    public void addRecords(List<Record> records, DifficultyLevel difficultyLevel) {
+        if (difficultyLevel == DifficultyLevel.EASY) {
+            easyRecords.addAll(records);
+            easyRecords.sort(Record::compareTo);
+        } else if (difficultyLevel == DifficultyLevel.MEDIUM) {
+            mediumRecords.addAll(records);
+            mediumRecords.sort(Record::compareTo);
+        } else if (difficultyLevel == DifficultyLevel.HARD) {
+            hardRecords.addAll(records);
+            hardRecords.sort(Record::compareTo);
+        }
     }
 
-    public void addRecord(int time) {
-        easyRecords.add(new Record("Anonim", time));
-        easyRecords.sort(Record::compareTo);
+    public void addRecord(int time, DifficultyLevel difficultyLevel) {
+        Record record = new Record("Anonim", time);
+        if (difficultyLevel == DifficultyLevel.EASY) {
+            easyRecords.add(record);
+            easyRecords.sort(Record::compareTo);
+        } else if (difficultyLevel == DifficultyLevel.MEDIUM) {
+            mediumRecords.add(record);
+            mediumRecords.sort(Record::compareTo);
+        } else if (difficultyLevel == DifficultyLevel.HARD) {
+            hardRecords.add(record);
+            hardRecords.sort(Record::compareTo);
+        }
     }
 
     public List<Record> getEasyRecords() {
         return easyRecords;
     }
 
+    public List<Record> getMediumRecords() {
+        return mediumRecords;
+    }
+
+    public List<Record> getHardRecords() {
+        return hardRecords;
+    }
+
     public void show() {
         easyRecords.forEach(System.out::println);
+    }
+
+    public void resetRecords() {
+        easyRecords.clear();
+        mediumRecords.clear();
+        hardRecords.clear();
     }
 }

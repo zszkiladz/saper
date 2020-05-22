@@ -1,6 +1,7 @@
 package pl.plauszta;
 
 import javafx.application.Application;
+import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Records;
 import pl.plauszta.gui.GuiGame;
 
@@ -22,7 +23,9 @@ public class Main {
         JAXBContext jaxbContext = JAXBContext.newInstance(Records.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         Records records = (Records) jaxbUnmarshaller.unmarshal(file);
-        Records.getInstance().addRecords(records.getEasyRecords());
+        Records.getInstance().addRecords(records.getEasyRecords(), DifficultyLevel.EASY);
+        Records.getInstance().addRecords(records.getMediumRecords(), DifficultyLevel.MEDIUM);
+        Records.getInstance().addRecords(records.getHardRecords(), DifficultyLevel.HARD);
     }
 
     private static void saveRecords() throws JAXBException {

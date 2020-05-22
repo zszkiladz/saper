@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<records>
+    <easyRecords name="Zuza" time="19"/>
+    <easyRecords name="Jan" time="20"/>
+    <easyRecords name="Anonim" time="39"/>
+    <easyRecords name="Lizak" time="167"/>
+</records>

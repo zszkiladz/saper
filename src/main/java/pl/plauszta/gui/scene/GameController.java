@@ -110,10 +110,7 @@ public class GameController implements Initializable {
                 dialog.setHeaderText("You win!\nTime: " + timeString);
                 dialog.setContentText("Please enter your name:");
                 Optional<String> result = dialog.showAndWait();
-                result.ifPresent(name -> {
-                    Records.getInstance().addRecord(new Record(name, stopTime));
-                });
-
+                result.ifPresent(name -> Records.getInstance().addRecord(new Record(name, stopTime), game.getDifficultyLevel()));
             }
         }
     }
