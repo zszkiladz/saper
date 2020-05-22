@@ -1,4 +1,4 @@
-package pl.plauszta.gui;
+package pl.plauszta.gui.scene;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,8 +13,12 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import pl.plauszta.game.Game;
+import pl.plauszta.game.Records;
+import pl.plauszta.gui.scene.button.BoardButton;
+import pl.plauszta.gui.scene.button.Status;
 
 import java.net.URL;
+import java.time.LocalTime;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
@@ -89,12 +93,15 @@ public class GameController implements Initializable {
                 newGame();
                 return;
             }
-            endGame();
+            String timeString = time.getText();
+            endGame("You lose!", timeString);
         } else {
             updateButton(button, xButton, yButton);
             if (gameIsOver()) {
-                lockButtons();
-                showEndAlert("You win!");
+                String timeString = time.getText();
+                int stopTime = LocalTime.parse(timeString).toSecondOfDay();
+                endGame("You win!\nTime: " + timeString, timeString);
+                Records.getInstance().addRecord(stopTime);
             }
         }
     }
@@ -104,9 +111,11 @@ public class GameController implements Initializable {
         SceneChanger.changeScene(menuBar.getScene());
     }
 
-    private void endGame() {
+    private void endGame(String message, String timeString) {
+        statisticsText.getChildren().remove(2);
+        statisticsText.getChildren().add(new Text(timeString));
         lockButtons();
-        showEndAlert("You lose!");
+        showEndAlert(message);
     }
 
     private void updateButton(Button button, int xButton, int yButton) {
@@ -180,6 +189,7 @@ public class GameController implements Initializable {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("End of game");
         alert.setHeaderText(null);
+        alert.getDialogPane().setPrefWidth(100);
         alert.setContentText(message);
         alert.showAndWait();
     }

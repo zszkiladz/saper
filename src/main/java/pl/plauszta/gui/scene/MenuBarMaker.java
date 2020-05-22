@@ -1,39 +1,44 @@
-package pl.plauszta.gui;
+package pl.plauszta.gui.scene;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
-import javafx.util.Duration;
 import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Game;
+import pl.plauszta.gui.CustomGameParams;
 
-import java.time.LocalTime;
 import java.util.Optional;
 
-public class SceneMaker {
+public class MenuBarMaker {
 
     private final Game game = Game.getInstance();
 
-    public void prepareScene(MenuBar menuBar, TextFlow statisticsText, Text time, int numberOfFlags) {
-        prepareMenuBar(menuBar);
-        initTimer(time);
-        prepareStatistics(statisticsText, time, numberOfFlags);
-    }
-
-    private void prepareMenuBar(MenuBar menuBar) {
+    public void prepareMenuBar(MenuBar menuBar) {
         Menu gameMenu = prepareGameMenu(menuBar);
         Menu helpMenu = prepareHelpMenu();
+        Menu recordsMenu = prepareRecordMenu();
 
         menuBar.getMenus().add(gameMenu);
+        menuBar.getMenus().add(recordsMenu);
         menuBar.getMenus().add(helpMenu);
+    }
+
+    private Menu prepareRecordMenu() {
+        Menu gameMenu = new Menu("Records");
+
+        MenuItem showRecordsItem = new MenuItem("Show Records");
+        showRecordsItem.setOnAction(event -> {
+            //TODO showing records
+        });
+
+        MenuItem resetRecordsItem = new MenuItem("Reset Records");
+        resetRecordsItem.setOnAction(event -> {
+            //TODO reset records
+        });
+
+        gameMenu.getItems().add(showRecordsItem);
+        gameMenu.getItems().add(resetRecordsItem);
+        return gameMenu;
     }
 
     private Menu prepareGameMenu(MenuBar menuBar) {
@@ -216,28 +221,5 @@ public class SceneMaker {
         helpMenu.getItems().add(howToPlayItem);
         helpMenu.getItems().add(aboutAuthorItem);
         return helpMenu;
-    }
-
-    private void initTimer(Text time) {
-        LocalTime startTime = LocalTime.now();
-        Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
-            LocalTime currentTime = LocalTime.now().minusSeconds(startTime.toSecondOfDay());
-            time.setText(currentTime.getHour() + ":" + currentTime.getMinute() + ":" + currentTime.getSecond());
-        }),
-                new KeyFrame(Duration.seconds(1))
-        );
-        clock.setCycleCount(Animation.INDEFINITE);
-        clock.play();
-    }
-
-    private void prepareStatistics(TextFlow statisticsText, Text time, int numberOfFlags) {
-        ObservableList<Node> children = statisticsText.getChildren();
-        String minesStat = String.format("Mines: %d/%d%n", numberOfFlags, game.getMinesNumber());
-        children.add(new Text(minesStat));
-        Text t = new Text("Time: ");
-        t.setTextAlignment(TextAlignment.RIGHT);
-        children.add(t);
-        time.setTextAlignment(TextAlignment.RIGHT);
-        children.add(time);
     }
 }

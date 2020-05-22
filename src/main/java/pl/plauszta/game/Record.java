@@ -1,10 +1,10 @@
 package pl.plauszta.game;
 
 public class Record {
-    private String name;
-    private Long time;
+    private final String name;
+    private final int time;
 
-    public Record(String name, Long time) {
+    public Record(String name, int time) {
         this.name = name;
         this.time = time;
     }
@@ -13,7 +13,7 @@ public class Record {
         return name;
     }
 
-    public Long getTime() {
+    public int getTime() {
         return time;
     }
 

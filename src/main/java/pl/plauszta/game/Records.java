@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Records implements Serializable {
-    private Records instance;
 
-    private final List<Record> records;
+    private static Records instance;
+
+    private final List<Record> recordsList;
 
     private Records() {
-        this.records = new ArrayList<>();
+        this.recordsList = new ArrayList<>();
     }
 
-    public Records getInstance() {
+    public static Records getInstance() {
         if (instance == null) {
             instance = new Records();
         }
@@ -21,15 +22,15 @@ public class Records implements Serializable {
     }
 
     public void addRecord(Record record) {
-        records.add(record);
+        recordsList.add(record);
     }
 
-    public void addRecord(Long time) {
-        records.add(new Record("Anonim", time));
+    public void addRecord(int time) {
+        recordsList.add(new Record("Anonim", time));
     }
 
-    public List<Record> getRecords() {
-        return records;
+    public List<Record> getRecordsList() {
+        return recordsList;
     }
 
 
