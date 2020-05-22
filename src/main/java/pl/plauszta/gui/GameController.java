@@ -42,7 +42,7 @@ public class GameController implements Initializable {
     Text time = new Text();
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) { //TODO add timer and progress
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         prepareGridOfGameBoard();
         prepareMenuBar();
         initTimer();
@@ -73,10 +73,7 @@ public class GameController implements Initializable {
         Menu gameMenu = new Menu("Game");
 
         MenuItem newGameItem = new MenuItem("New Game");
-        newGameItem.setOnAction(event -> {
-            game.newGame();
-            SceneChanger.changeScene(menuBar.getScene());
-        });
+        newGameItem.setOnAction(event -> newGame());
 
         Menu changeDifficultyItem = prepareChangeDifficultyMenu();
 
@@ -249,7 +246,7 @@ public class GameController implements Initializable {
         return helpMenu;
     }
 
-    private void prepareGridOfGameBoard() { //TODO make first reavel cant be mine
+    private void prepareGridOfGameBoard() {
         grid.getChildren().removeAll();
         for (int i = 0; i < game.getMines()[0].length; i++) {
             for (int j = 0; j < game.getMines().length; j++) {
@@ -295,6 +292,10 @@ public class GameController implements Initializable {
         int yButton = Integer.parseInt(coords[1]);
 
         if (game.getMines()[xButton][yButton]) {
+            if (game.getCountHits() == 0) {
+                newGame();
+                return;
+            }
             endGame();
         } else {
             updateButton(button, xButton, yButton);
@@ -303,6 +304,11 @@ public class GameController implements Initializable {
                 showEndAlert("You win!");
             }
         }
+    }
+
+    private void newGame() {
+        game.newGame();
+        SceneChanger.changeScene(menuBar.getScene());
     }
 
     private void endGame() {

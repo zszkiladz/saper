@@ -123,5 +123,9 @@ public class Game {
     public int getMinesNumber() {
         return minesNumber;
     }
+
+    public int getCountHits() {
+        return countHits;
+    }
 }
 
