@@ -50,21 +50,37 @@ public class GameController implements Initializable {
         grid.getChildren().removeAll();
         for (int i = 0; i < game.getMines()[0].length; i++) {
             for (int j = 0; j < game.getMines().length; j++) {
-                BoardButton button = new BoardButton();
-                button.setPrefWidth(30);
-                button.setPrefHeight(30);
-                button.setId("" + j + " " + i);
-                button.getStyleClass().add("my");
-                button.setOnMouseClicked(event -> {
-                    if (event.getButton() == MouseButton.PRIMARY) {
-                        updateBoard(button);
-                    } else if (event.getButton() == MouseButton.SECONDARY) {
-                        changeFlag(button);
-                    }
-                });
+                BoardButton button = gameButton(i, j);
                 grid.add(button, i, j);
             }
         }
+    }
+
+    private BoardButton gameButton(int i, int j) {
+        BoardButton button = new BoardButton();
+        button.setPrefWidth(30);
+        button.setPrefHeight(30);
+        button.setId("" + j + " " + i);
+        button.getStyleClass().add("my");
+        if (game.getMines()[j][i]) {
+            button.getStyleClass().add("debug-mine");
+        }
+
+        button.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                updateBoard(button);
+            } else if (event.getButton() == MouseButton.SECONDARY) {
+                if (Status.CLICKED == button.getStatus()) {
+                    clickedButtonAlreadyClicked(button);
+                } else {
+                    changeFlag(button);
+                }
+            }
+            if (game.isOver()) {
+                winGame();
+            }
+        });
+        return button;
     }
 
     private void changeFlag(BoardButton button) {
@@ -84,35 +100,65 @@ public class GameController implements Initializable {
     }
 
     private void updateBoard(BoardButton button) {
-        if (Status.MARKED == button.getStatus()) {
+        if (Status.MARKED == button.getStatus() || button.getStatus() == Status.CLICKED) {
             return;
         }
+
         String[] coords = button.getId().split(" ");
         int xButton = Integer.parseInt(coords[0]);
         int yButton = Integer.parseInt(coords[1]);
 
         if (game.getMines()[xButton][yButton]) {
-            if (game.getCountHits() == 0) {
-                newGame();
-                return;
-            }
-            String timeString = time.getText();
-            endGame("You lose!", timeString);
+            buttonIsMine();
         } else {
             updateButton(button, xButton, yButton);
-            if (gameIsOver()) {
-                String timeString = time.getText();
-                int stopTime = LocalTime.parse(timeString).toSecondOfDay();
-                endGame("You win!\nTime: " + timeString, timeString);
+        }
+    }
 
-                TextInputDialog dialog = new TextInputDialog("Anonim");
-                dialog.setTitle("Game end");
-                dialog.setHeaderText("You win!\nTime: " + timeString);
-                dialog.setContentText("Please enter your name:");
-                Optional<String> result = dialog.showAndWait();
-                result.ifPresent(name -> Records.getInstance().addRecord(new Record(name, stopTime), game.getDifficultyLevel()));
+    private void buttonIsMine() {
+        if (game.getCountHits() == 0) {
+            newGame();
+            return;
+        }
+        String timeString = time.getText();
+        endGame("You lose!", timeString);
+    }
+
+    private void clickedButtonAlreadyClicked(BoardButton button) {
+        int minesButton = Integer.parseInt(button.getText());
+        int flags = 0;
+        String[] coordsButtun = button.getId().split(" ");
+        int x = Integer.parseInt(coordsButtun[0]);
+        int y = Integer.parseInt(coordsButtun[1]);
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                boolean inBounds = x + i >= 0 && x + i < game.getMines()[0].length
+                        && y + j >= 0 && y + j < game.getMines().length;
+                boolean isCurrentButton = i == 0 && j == 0;
+                BoardButton neighbourButton = (BoardButton) getNodeFromGridPane(x + i, y + j);
+                if (inBounds && !isCurrentButton
+                        && neighbourButton != null
+                        && neighbourButton.getStatus() == Status.MARKED) {
+                    flags++;
+                }
             }
         }
+        if (minesButton == flags) {
+            expandAllBlanks(x, y);
+        }
+    }
+
+    private void winGame() {
+        String timeString = time.getText();
+        int stopTime = LocalTime.parse(timeString).toSecondOfDay();
+        endGame("You win!\nTime: " + timeString, timeString);
+
+        TextInputDialog dialog = new TextInputDialog("Anonim");
+        dialog.setTitle("Game end");
+        dialog.setHeaderText("You win!\nTime: " + timeString);
+        dialog.setContentText("Please enter your name:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> Records.getInstance().addRecord(new Record(name, stopTime), game.getDifficultyLevel()));
     }
 
     private void newGame() {
@@ -127,10 +173,16 @@ public class GameController implements Initializable {
         showEndAlert(message);
     }
 
-    private void updateButton(Button button, int xButton, int yButton) {
+    private void updateButton(BoardButton button, int xButton, int yButton) {
+        if (game.getMines()[xButton][yButton]) {
+            String timeString = time.getText();
+            endGame("You lose!", timeString);
+        }
         game.addHit();
         int mines = game.getGameBoard()[xButton][yButton];
+        button.setClicked();
         button.setText(mines + "");
+        button.setStyle("-fx-background-color: #ffffff");
         if (mines == 0) {
             button.setText(null);
         } else if (mines < 4) {
@@ -140,7 +192,6 @@ public class GameController implements Initializable {
         } else {
             button.setTextFill(Paint.valueOf("RED"));
         }
-        button.setDisable(true);
 
         if (mines == 0) {
             expandAllBlanks(xButton, yButton);
@@ -161,8 +212,8 @@ public class GameController implements Initializable {
     }
 
     private void updateNeighbouringButton(int xButton, int yButton) {
-        Button neighbourButton = (Button) getNodeFromGridPane(xButton, yButton);
-        if (neighbourButton != null && !neighbourButton.isDisable()) {
+        BoardButton neighbourButton = (BoardButton) getNodeFromGridPane(xButton, yButton);
+        if (neighbourButton != null && neighbourButton.getStatus() == Status.UNMARKED) {
             updateButton(neighbourButton, xButton, yButton);
         }
     }
@@ -188,10 +239,6 @@ public class GameController implements Initializable {
                 button.setGraphic(mineImage);
             }
         }
-    }
-
-    private boolean gameIsOver() {
-        return game.isOver();
     }
 
     private void showEndAlert(String message) {

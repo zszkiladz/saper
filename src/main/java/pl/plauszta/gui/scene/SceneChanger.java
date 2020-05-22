@@ -14,7 +14,7 @@ public class SceneChanger {
     private SceneChanger() {
     }
 
-    static void changeScene(Scene scene) {
+    public static void changeScene(Scene scene) {
         try {
             Stage stage = (Stage) scene.getWindow();
             final URL resource = GuiGame.class.getClassLoader().getResource("gameScene.fxml");

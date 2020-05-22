@@ -10,6 +10,7 @@ import pl.plauszta.game.Records;
 import pl.plauszta.gui.CustomGameParams;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 public class MenuBarMaker {
@@ -35,6 +36,17 @@ public class MenuBarMaker {
         MenuItem showHardRecordsItem = hardRecordsItem();
 
         MenuItem resetRecordsItem = new MenuItem("Reset Records");
+        setResetAction(resetRecordsItem);
+
+        gameMenu.getItems().add(showEasyRecordsItem);
+        gameMenu.getItems().add(showMediumRecordsItem);
+        gameMenu.getItems().add(showHardRecordsItem);
+        gameMenu.getItems().add(new SeparatorMenuItem());
+        gameMenu.getItems().add(resetRecordsItem);
+        return gameMenu;
+    }
+
+    private void setResetAction(MenuItem resetRecordsItem) {
         resetRecordsItem.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Reset records");
@@ -46,51 +58,42 @@ public class MenuBarMaker {
                 Records.getInstance().resetRecords();
             }
         });
-
-        gameMenu.getItems().add(showEasyRecordsItem);
-        gameMenu.getItems().add(showMediumRecordsItem);
-        gameMenu.getItems().add(showHardRecordsItem);
-        gameMenu.getItems().add(new SeparatorMenuItem());
-        gameMenu.getItems().add(resetRecordsItem);
-        return gameMenu;
     }
 
     private MenuItem easyRecordsItem() {
         MenuItem showEasyRecordsItem;
         showEasyRecordsItem = new MenuItem("Show Easy Game Records");
         showEasyRecordsItem.setOnAction(event -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Records");
-            alert.setHeaderText(null);
-            alert.getDialogPane().setPrefWidth(230);
-            StringBuilder sb = new StringBuilder("");
-            for (Record record : Records.getInstance().getEasyRecords()) {
-                int time = record.getTime();
-                sb.append(LocalTime.parse(TIME_ZERO).plusSeconds(time)).append(" ").append(record.getName()).append("\n");
-            }
-            alert.setContentText(sb.toString());
-            alert.showAndWait();
-
+            List<Record> easyRecords = Records.getInstance().getEasyRecords();
+            showRecords(easyRecords);
         });
         return showEasyRecordsItem;
+    }
+
+    private void showRecords(List<Record> records) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Records");
+        alert.setHeaderText(null);
+        alert.getDialogPane().setPrefWidth(230);
+        StringBuilder sb = new StringBuilder();
+        if (records.isEmpty()) {
+            sb.append("No records");
+        }
+        for (int i = 0; i < records.size() && i < 10; i++) {
+            Record record = records.get(i);
+            int time = record.getTime();
+            sb.append(i + 1).append(". ").append(LocalTime.parse(TIME_ZERO).plusSeconds(time)).append(" ").append(record.getName()).append("\n");
+        }
+        alert.setContentText(sb.toString());
+        alert.showAndWait();
     }
 
     private MenuItem mediumRecordsItem() {
         MenuItem mediumRecordsItem;
         mediumRecordsItem = new MenuItem("Show Medium Game Records");
         mediumRecordsItem.setOnAction(event -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Records");
-            alert.setHeaderText(null);
-            alert.getDialogPane().setPrefWidth(230);
-            StringBuilder sb = new StringBuilder("");
-            for (Record record : Records.getInstance().getMediumRecords()) {
-                int time = record.getTime();
-                sb.append(LocalTime.parse(TIME_ZERO).plusSeconds(time)).append(" ").append(record.getName()).append("\n");
-            }
-            alert.setContentText(sb.toString());
-            alert.showAndWait();
-
+            List<Record> mediumRecords = Records.getInstance().getMediumRecords();
+            showRecords(mediumRecords);
         });
         return mediumRecordsItem;
     }
@@ -99,18 +102,8 @@ public class MenuBarMaker {
         MenuItem hardRecordsItem;
         hardRecordsItem = new MenuItem("Show Hard Game Records");
         hardRecordsItem.setOnAction(event -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Records");
-            alert.setHeaderText(null);
-            alert.getDialogPane().setPrefWidth(230);
-            StringBuilder sb = new StringBuilder("");
-            for (Record record : Records.getInstance().getHardRecords()) {
-                int time = record.getTime();
-                sb.append(LocalTime.parse(TIME_ZERO).plusSeconds(time)).append(" ").append(record.getName()).append("\n");
-            }
-            alert.setContentText(sb.toString());
-            alert.showAndWait();
-
+            List<Record> hardRecords = Records.getInstance().getHardRecords();
+            showRecords(hardRecords);
         });
         return hardRecordsItem;
     }

@@ -16,4 +16,8 @@ public class BoardButton extends Button {
     public void changeStatus() {
         status = status.equals(Status.MARKED) ? Status.UNMARKED : Status.MARKED;
     }
+
+    public void setClicked() {
+        status = Status.CLICKED;
+    }
 }
