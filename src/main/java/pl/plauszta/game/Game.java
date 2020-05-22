@@ -119,5 +119,9 @@ public class Game {
     public DifficultyLevel getDifficultyLevel() {
         return difficultyLevel;
     }
+
+    public int getMinesNumber() {
+        return minesNumber;
+    }
 }
 

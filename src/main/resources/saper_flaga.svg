@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="256px"
+   height="256px"
+   viewBox="0 0 256 256"
+   version="1.1"
+   id="SVGRoot"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="saper_flaga.svg"
+   inkscape:export-filename="C:\Users\Bartek\Desktop\saper_flaga.png"
+   inkscape:export-xdpi="96.000008"
+   inkscape:export-ydpi="96.000008">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2"
+     inkscape:cx="217.53023"
+     inkscape:cy="142.55296"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:grid-bbox="true" />
+  <defs
+     id="defs5496" />
+  <metadata
+     id="metadata5499">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <rect
+       style="fill:#502d16;fill-opacity:1;stroke:none;stroke-width:333.78955078;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4787"
+       width="5.575736"
+       height="237.52635"
+       x="49.774216"
+       y="14.245214" />
+    <path
+       style="fill:#ff0000;stroke:none;stroke-width:1.10393929px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 55.349931,14.24521 v 109.67474 c 0,0 28.384005,-13.99533 43.727719,-14.44116 21.68022,-0.62995 41.17825,17.01104 62.86639,16.78296 14.49689,-0.15245 41.77626,-12.09935 41.77626,-12.09935 V 15.025828 C 191.35611,14.960784 177.10948,26.152548 163.11502,25.759103 139.58202,25.097485 122.52087,3.289858 95.95522,3.9022154 81.991632,4.224072 67.714119,14.310257 55.349931,14.24521 Z"
+       id="path4791"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccaaccasc" />
+  </g>
+</svg>

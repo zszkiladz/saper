@@ -1,17 +1,28 @@
 package pl.plauszta.gui;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
+import javafx.util.Duration;
 import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Game;
 
 import java.net.URL;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -23,12 +34,31 @@ public class GameController implements Initializable {
     @FXML
     public GridPane grid;
 
+    @FXML
+    public TextFlow statisticsText;
+
     Game game = Game.getInstance();
+    int numberOfFlags = 0;
+    Text time = new Text();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) { //TODO add timer and progress
         prepareGridOfGameBoard();
         prepareMenuBar();
+        initTimer();
+        prepareStatistics();
+    }
+
+    private void initTimer() {
+        LocalTime startTime = LocalTime.now();
+        Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
+            LocalTime currentTime = LocalTime.now().minusSeconds(startTime.toSecondOfDay());
+            time.setText(currentTime.getHour() + ":" + currentTime.getMinute() + ":" + currentTime.getSecond());
+        }),
+                new KeyFrame(Duration.seconds(1))
+        );
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
     }
 
     private void prepareMenuBar() {
@@ -108,7 +138,7 @@ public class GameController implements Initializable {
                 CustomGameParams customGameParams = parameters.get();
                 while (customGameParams.getX() == 0) {
                     parameters = dialog.showAndWait();
-                    if (!parameters.isPresent()) {
+                    if (parameters.isEmpty()) {
                         setSelectedRadioItem(easyItem, mediumItem, hardItem, customItem);
                         return;
                     }
@@ -153,31 +183,38 @@ public class GameController implements Initializable {
         Platform.runLater(rowsNumber::requestFocus);
         dialog.setResultConverter((ButtonType button) -> {
             if (button == ButtonType.OK) {
-                int rows = Integer.parseInt(rowsNumber.getText());
-                int columns = Integer.parseInt(columnsNumber.getText());
-                int mines = Integer.parseInt(minesNumber.getText());
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Wrong numbers");
-
-                if (rows < 1 || columns < 1 || mines < 1) {
-                    alert.setContentText("These numbers should be greater than 0!");
-                    alert.showAndWait();
-                    return new CustomGameParams(0, 0, 0);
-                }
-                if (!checkInput(rows, columns, mines)) {
-                    int maxMines = (rows - 1) * (columns - 1);
-
-                    alert.setContentText("With that board sizes, the maximum number of mines is " + maxMines);
-                    alert.showAndWait();
-                    return new CustomGameParams(0, 0, 0);
-                } else {
-                    return new CustomGameParams(rows, columns, mines);
-                }
+                return getInputResult(rowsNumber, columnsNumber, minesNumber);
             }
             return null;
         });
         return dialog;
+    }
+
+    private CustomGameParams getInputResult(TextField rowsNumber, TextField columnsNumber, TextField minesNumber) {
+        int rows = Integer.parseInt(rowsNumber.getText());
+        int columns = Integer.parseInt(columnsNumber.getText());
+        int mines = Integer.parseInt(minesNumber.getText());
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Wrong numbers");
+        return validateInput(rows, columns, mines, alert);
+    }
+
+    private CustomGameParams validateInput(int rows, int columns, int mines, Alert alert) {
+        if (rows < 1 || columns < 1 || mines < 1) {
+            alert.setContentText("These numbers should be greater than 0!");
+            alert.showAndWait();
+            return new CustomGameParams(0, 0, 0);
+        }
+        if (!checkInput(rows, columns, mines)) {
+            int maxMines = (rows - 1) * (columns - 1);
+
+            alert.setContentText("With that board sizes, the maximum number of mines is " + maxMines);
+            alert.showAndWait();
+            return new CustomGameParams(0, 0, 0);
+        } else {
+            return new CustomGameParams(rows, columns, mines);
+        }
     }
 
     private boolean checkInput(int rowsNumber, int columnsNumber, int minesNumber) {
@@ -216,10 +253,11 @@ public class GameController implements Initializable {
         grid.getChildren().removeAll();
         for (int i = 0; i < game.getMines()[0].length; i++) {
             for (int j = 0; j < game.getMines().length; j++) {
-                Button button = new Button();
+                BoardButton button = new BoardButton();
                 button.setPrefWidth(30);
                 button.setPrefHeight(30);
                 button.setId("" + j + " " + i);
+                button.getStyleClass().add("my");
                 button.setOnMouseClicked(event -> {
                     if (event.getButton() == MouseButton.PRIMARY) {
                         updateBoard(button);
@@ -232,12 +270,24 @@ public class GameController implements Initializable {
         }
     }
 
-    private void changeFlag(Button button) {
-        button.setText(button.getText().equals("F") ? "" : "F");
+    private void changeFlag(BoardButton button) {
+        button.changeStatus();
+        if (button.getStatus() == Status.UNMARKED) {
+            button.setGraphic(null);
+            numberOfFlags--;
+        } else {
+            ImageView flagImage = new ImageView("saper_flaga.png");
+            flagImage.setFitHeight(12);
+            flagImage.setFitWidth(12);
+            button.setGraphic(flagImage);
+            numberOfFlags++;
+        }
+        String minesStat = String.format("Mines: %d/%d%n", numberOfFlags, game.getMinesNumber());
+        statisticsText.getChildren().set(0, new Text(minesStat));
     }
 
-    private void updateBoard(Button button) {
-        if ("F".equals(button.getText())) {
+    private void updateBoard(BoardButton button) {
+        if (Status.MARKED == button.getStatus()) {
             return;
         }
         String[] coords = button.getId().split(" ");
@@ -245,7 +295,7 @@ public class GameController implements Initializable {
         int yButton = Integer.parseInt(coords[1]);
 
         if (game.getMines()[xButton][yButton]) {
-            endGame(button);
+            endGame();
         } else {
             updateButton(button, xButton, yButton);
             if (gameIsOver()) {
@@ -255,8 +305,7 @@ public class GameController implements Initializable {
         }
     }
 
-    private void endGame(Button button) {
-        button.setText("X");
+    private void endGame() {
         lockButtons();
         showEndAlert("You lose!");
     }
@@ -265,6 +314,15 @@ public class GameController implements Initializable {
         game.addHit();
         int mines = game.getGameBoard()[xButton][yButton];
         button.setText(mines + "");
+        if (mines == 0) {
+            button.setText(null);
+        } else if (mines < 4) {
+            button.setTextFill(Paint.valueOf("GREEN"));
+        } else if (mines < 6) {
+            button.setTextFill(Paint.valueOf("ORANGE"));
+        } else {
+            button.setTextFill(Paint.valueOf("RED"));
+        }
         button.setDisable(true);
 
         if (mines == 0) {
@@ -307,7 +365,10 @@ public class GameController implements Initializable {
             button.setDisable(true);
             String[] choord = button.getId().split(" ");
             if (game.getMines()[Integer.parseInt(choord[0])][Integer.parseInt(choord[1])]) {
-                button.setText("X");
+                ImageView mineImage = new ImageView("saper_mina.png");
+                mineImage.setFitWidth(12);
+                mineImage.setFitHeight(12);
+                button.setGraphic(mineImage);
             }
         }
     }
@@ -322,5 +383,16 @@ public class GameController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void prepareStatistics() {
+        ObservableList<Node> children = statisticsText.getChildren();
+        String minesStat = String.format("Mines: %d/%d%n", numberOfFlags, game.getMinesNumber());
+        children.add(new Text(minesStat));
+        Text t = new Text("Time: ");
+        t.setTextAlignment(TextAlignment.RIGHT);
+        children.add(t);
+        time.setTextAlignment(TextAlignment.RIGHT);
+        children.add(time);
     }
 }
