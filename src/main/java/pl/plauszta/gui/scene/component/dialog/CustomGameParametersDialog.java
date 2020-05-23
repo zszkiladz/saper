@@ -1,4 +1,4 @@
-package pl.plauszta.gui.scene.component.menubar;
+package pl.plauszta.gui.scene.component.dialog;
 
 import javafx.application.Platform;
 import javafx.scene.control.*;

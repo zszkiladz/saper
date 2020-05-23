@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
+    public static final String SEPARATOR = "-";
     @FXML
     public MenuBar menuBar;
 
@@ -54,18 +55,19 @@ public class GameController implements Initializable {
         final int cols = game.getMines()[0].length;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                BoardButton button = gameButton(i, j);
+                Point pointButton = new Point(i, j);
+                BoardButton button = gameButton(pointButton);
                 grid.add(button, i, j);
 
-                if (game.getMines()[i][j]) {
-                    button.getStyleClass().add("debug-mine");
-                }
+//                if (game.getMines()[i][j]) {
+//                    button.getStyleClass().add("debug-mine");
+//                }
             }
         }
     }
 
-    private BoardButton gameButton(int i, int j) {
-        BoardButton button = new BoardButton(i, j);
+    private BoardButton gameButton(Point pointButton) {
+        BoardButton button = new BoardButton(pointButton);
         button.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 updateBoard(button);
@@ -85,26 +87,26 @@ public class GameController implements Initializable {
 
     private void clickedButtonAlreadyClicked(BoardButton button) {
         int minesButton = Integer.parseInt(button.getText() == null ? "0" : button.getText());
-        String[] coordsButton = button.getId().split(" ");
+        String[] coordsButton = button.getId().split(SEPARATOR);
         int x = Integer.parseInt(coordsButton[0]);
         int y = Integer.parseInt(coordsButton[1]);
-        int flags = countFlags(x, y);
+        Point buttonPoint = new Point(x, y);
+        int flags = countFlags(buttonPoint);
         System.out.println(flags);
         if (minesButton == flags) {
-            expandNeighbours(x, y);
+            expandNeighbours(buttonPoint);
         }
     }
 
-    private int countFlags(int x, int y) {
+    private int countFlags(Point point) {
         int flags = 0;
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
-                System.out.println("neighbour " + (x + i) + " " + (y + j));
-                boolean inBounds = x + i >= 0 && x + i < game.getMines().length && y + j >= 0
-                        && y + j < game.getMines()[0].length;
                 boolean isCurrentButton = i == 0 && j == 0;
-                BoardButton neighbourButton = (BoardButton) getNodeFromGridPane(x + i, y + j);
-                if (inBounds && !isCurrentButton && neighbourButton != null
+                final Point neighbourPoint = new Point(point.getX() + i, point.getY() + j);
+                BoardButton neighbourButton = (BoardButton) getNodeFromGridPane(neighbourPoint);
+
+                if (validateCoords(neighbourPoint) && !isCurrentButton && neighbourButton != null
                         && neighbourButton.getStatus() == Status.MARKED) {
                     flags++;
                 }
@@ -113,33 +115,38 @@ public class GameController implements Initializable {
         return flags;
     }
 
-    private Node getNodeFromGridPane(int x, int y) {
+    private Node getNodeFromGridPane(Point buttonPoint) {
         for (Node node : grid.getChildren()) {
             BoardButton but = (BoardButton) node;
-            if (Integer.parseInt(but.getId().split(" ")[0]) == x && Integer.parseInt(but.getId().split(" ")[1]) == y) {
+            if (Integer.parseInt(but.getId().split(SEPARATOR)[0]) == buttonPoint.getX() && Integer.parseInt(but.getId().split(SEPARATOR)[1]) == buttonPoint.getY()) {
                 return node;
             }
         }
         return null;
     }
 
-    private void expandNeighbours(int xButton, int yButton) {
+    private void expandNeighbours(Point buttonPoint) {
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
-                boolean inBounds = xButton + i >= 0 && xButton + i < game.getMines().length
-                        && yButton + j >= 0 && yButton + j < game.getMines()[0].length;
                 boolean isCurrentButton = i == 0 && j == 0;
-                if (inBounds && !isCurrentButton) {
-                    updateNeighbouringButton(xButton + i, yButton + j);
+                final Point neighbourPoint = new Point(buttonPoint.getX() + i, buttonPoint.getY() + j);
+
+                if (validateCoords(neighbourPoint) && !isCurrentButton) {
+                    updateNeighbouringButton(neighbourPoint);
                 }
             }
         }
     }
 
-    private void updateNeighbouringButton(int xButton, int yButton) {
-        BoardButton neighbourButton = (BoardButton) getNodeFromGridPane(xButton, yButton);
+    private boolean validateCoords(Point buttonPoint) {
+        return buttonPoint.getX() >= 0 && buttonPoint.getX() < game.getMines().length
+                && buttonPoint.getY() >= 0 && buttonPoint.getY() < game.getMines()[0].length;
+    }
+
+    private void updateNeighbouringButton(Point point) {
+        BoardButton neighbourButton = (BoardButton) getNodeFromGridPane(point);
         if (neighbourButton != null && neighbourButton.getStatus() == Status.UNMARKED) {
-            updateButton(neighbourButton, xButton, yButton);
+            updateButton(neighbourButton, point);
         }
     }
 
@@ -148,14 +155,14 @@ public class GameController implements Initializable {
             return;
         }
 
-        String[] coords = button.getId().split(" ");
+        String[] coords = button.getId().split(SEPARATOR);
         int xButton = Integer.parseInt(coords[0]);
         int yButton = Integer.parseInt(coords[1]);
 
         if (game.getMines()[xButton][yButton]) {
             buttonIsMine();
         } else {
-            updateButton(button, xButton, yButton);
+            updateButton(button, new Point(xButton, yButton));
         }
     }
 
@@ -171,18 +178,18 @@ public class GameController implements Initializable {
         endAlert.showAndWait();
     }
 
-    private void updateButton(BoardButton button, int xButton, int yButton) {
-        if (game.getMines()[xButton][yButton]) {
+    private void updateButton(BoardButton button, Point buttonPoint) {
+        if (game.getMines()[buttonPoint.getX()][buttonPoint.getY()]) {
             String timeString = time.getText();
             sceneAfterGameOver(timeString);
             EndAlert endAlert = new EndAlert("You lose!");
             endAlert.showAndWait();
         }
         game.addHit();
-        int mines = game.getGameBoard()[xButton][yButton];
+        int mines = game.getGameBoard()[buttonPoint.getX()][buttonPoint.getY()];
         button.setClicked();
         button.setText(mines + "");
-        button.setStyle("-fx-background-color: #ffffff");
+        button.getStyleClass().add("clicked-button");
         if (mines == 0) {
             button.setText(null);
         } else if (mines < 4) {
@@ -194,7 +201,7 @@ public class GameController implements Initializable {
         }
 
         if (mines == 0) {
-            expandNeighbours(xButton, yButton);
+            expandNeighbours(buttonPoint);
         }
     }
 
@@ -208,8 +215,8 @@ public class GameController implements Initializable {
         for (Node child : grid.getChildren()) {
             Button button = (Button) child;
             button.setDisable(true);
-            String[] choord = button.getId().split(" ");
-            if (game.getMines()[Integer.parseInt(choord[0])][Integer.parseInt(choord[1])]) {
+            String[] choords = button.getId().split(SEPARATOR);
+            if (game.getMines()[Integer.parseInt(choords[0])][Integer.parseInt(choords[1])]) {
                 ImageView mineImage = new ImageView("saper_mina.png");
                 mineImage.setFitWidth(12);
                 mineImage.setFitHeight(12);
@@ -220,7 +227,6 @@ public class GameController implements Initializable {
 
     private void changeFlag(BoardButton button) {
         button.changeStatus();
-        System.out.println("button " + button.getId() + " set " + button.getStatus());
         if (button.getStatus() == Status.UNMARKED) {
             button.setGraphic(null);
             numberOfFlags--;

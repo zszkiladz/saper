@@ -8,3 +8,7 @@
 .debug-mine {
     -fx-background-color: red;
 }
+
+.clicked-button {
+    -fx-background-color: #ffffff
+}

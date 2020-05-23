@@ -1,15 +1,16 @@
 package pl.plauszta.gui.scene.component.button;
 
 import javafx.scene.control.Button;
+import pl.plauszta.gui.scene.Point;
 
 public class BoardButton extends Button {
     private Status status;
 
-    public BoardButton(int i, int j) {
+    public BoardButton(Point point) {
         this.status = Status.UNMARKED;
         this.setPrefWidth(30);
         this.setPrefHeight(30);
-        this.setId(i + " " + j); //FIXME replace whitespaces with '-'
+        this.setId(point.getX() + "-" + point.getY());
         this.getStyleClass().add("board-button");
     }
 

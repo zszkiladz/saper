@@ -5,6 +5,7 @@ import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Game;
 import pl.plauszta.gui.CustomGameParams;
 import pl.plauszta.gui.scene.SceneChanger;
+import pl.plauszta.gui.scene.component.dialog.CustomGameParametersDialog;
 
 import java.util.Optional;
 
