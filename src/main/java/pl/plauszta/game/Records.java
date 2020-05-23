@@ -32,13 +32,24 @@ public class Records {
 
     public void addRecord(Record record, DifficultyLevel difficultyLevel) {
         if (difficultyLevel == DifficultyLevel.EASY) {
-            easyRecords.add(record);
+            addRecordToList(record, easyRecords);
         } else if (difficultyLevel == DifficultyLevel.MEDIUM) {
-            mediumRecords.add(record);
+            addRecordToList(record, mediumRecords);
         } else if (difficultyLevel == DifficultyLevel.HARD) {
-            hardRecords.add(record);
+            addRecordToList(record, hardRecords);
         }
-        easyRecords.sort(Record::compareTo);
+    }
+
+    private void addRecordToList(Record record, List<Record> records) {
+        final int recordsSize = records.size();
+        if (recordsSize > 9) {
+            if (record.getTime() > records.get(recordsSize - 1).getTime()) {
+                return;
+            }
+            records.remove(recordsSize - 1);
+        }
+        records.add(record);
+        records.sort(Record::compareTo);
     }
 
     public void addRecords(List<Record> records, DifficultyLevel difficultyLevel) {
@@ -50,20 +61,6 @@ public class Records {
             mediumRecords.sort(Record::compareTo);
         } else if (difficultyLevel == DifficultyLevel.HARD) {
             hardRecords.addAll(records);
-            hardRecords.sort(Record::compareTo);
-        }
-    }
-
-    public void addRecord(int time, DifficultyLevel difficultyLevel) {
-        Record record = new Record("Anonim", time);
-        if (difficultyLevel == DifficultyLevel.EASY) {
-            easyRecords.add(record);
-            easyRecords.sort(Record::compareTo);
-        } else if (difficultyLevel == DifficultyLevel.MEDIUM) {
-            mediumRecords.add(record);
-            mediumRecords.sort(Record::compareTo);
-        } else if (difficultyLevel == DifficultyLevel.HARD) {
-            hardRecords.add(record);
             hardRecords.sort(Record::compareTo);
         }
     }

@@ -92,7 +92,6 @@ public class GameController implements Initializable {
         int y = Integer.parseInt(coordsButton[1]);
         Point buttonPoint = new Point(x, y);
         int flags = countFlags(buttonPoint);
-        System.out.println(flags);
         if (minesButton == flags) {
             expandNeighbours(buttonPoint);
         }
