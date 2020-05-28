@@ -8,12 +8,13 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.Objects;
 
 public class GuiGame extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         final URL homeResource = GuiGame.class.getClassLoader().getResource("gameScene.fxml");
-        final Pane homePane = FXMLLoader.load(homeResource);
+        final Pane homePane = FXMLLoader.load(Objects.requireNonNull(homeResource));
         final Scene scene = new Scene(homePane);
         scene.getStylesheets().add("scene.css");
         stage.setScene(scene);

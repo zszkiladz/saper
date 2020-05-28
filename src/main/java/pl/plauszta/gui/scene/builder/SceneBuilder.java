@@ -1,4 +1,4 @@
-package pl.plauszta.gui.scene;
+package pl.plauszta.gui.scene.builder;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -15,12 +15,12 @@ import pl.plauszta.game.Game;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-public class SceneMaker {
+public class SceneBuilder {
 
     private final Game game = Game.getInstance();
 
     public void prepareScene(MenuBar menuBar, TextFlow statisticsText, Text time, int numberOfFlags) {
-        (new MenuBarMaker()).prepareMenuBar(menuBar);
+        (new MenuBarBuilder()).prepareMenuBar(menuBar);
 
         initTimer(time);
         prepareStatistics(statisticsText, time, numberOfFlags);

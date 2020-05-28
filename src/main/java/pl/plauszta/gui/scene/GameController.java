@@ -16,6 +16,7 @@ import pl.plauszta.game.DifficultyLevel;
 import pl.plauszta.game.Game;
 import pl.plauszta.game.Record;
 import pl.plauszta.game.Records;
+import pl.plauszta.gui.scene.builder.SceneBuilder;
 import pl.plauszta.gui.scene.component.button.BoardButton;
 import pl.plauszta.gui.scene.component.button.Status;
 import pl.plauszta.gui.scene.component.dialog.EndAlert;
@@ -44,7 +45,7 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        (new SceneMaker()).prepareScene(menuBar, statisticsText, time, numberOfFlags);
+        (new SceneBuilder()).prepareScene(menuBar, statisticsText, time, numberOfFlags);
 
         prepareGridOfGameBoard();
     }
@@ -59,9 +60,9 @@ public class GameController implements Initializable {
                 BoardButton button = gameButton(pointButton);
                 grid.add(button, i, j);
 
-                if (game.getMines()[i][j]) {
-                    button.getStyleClass().add("debug-mine");
-                }
+//                if (game.getMines()[i][j]) {
+//                    button.getStyleClass().add("debug-mine");
+//                }
             }
         }
     }
@@ -215,8 +216,8 @@ public class GameController implements Initializable {
         for (Node child : grid.getChildren()) {
             Button button = (Button) child;
             button.setDisable(true);
-            String[] choords = button.getId().split(SEPARATOR);
-            if (game.getMines()[Integer.parseInt(choords[0])][Integer.parseInt(choords[1])]) {
+            String[] coords = button.getId().split(SEPARATOR);
+            if (game.getMines()[Integer.parseInt(coords[0])][Integer.parseInt(coords[1])]) {
                 ImageView mineImage = new ImageView("saper_mina.png");
                 mineImage.setFitWidth(12);
                 mineImage.setFitHeight(12);
