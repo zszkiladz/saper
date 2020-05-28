@@ -8,6 +8,6 @@ public class InfoAlert extends Alert {
         super(AlertType.INFORMATION);
         this.setTitle("About author");
         this.setHeaderText(null);
-        this.setContentText("Plauszta Zuzanna\nhttps://github.com/zplauszta");
+        this.setContentText("Plauszta Zuzanna\n\nhttps://github.com/zplauszta");
     }
 }

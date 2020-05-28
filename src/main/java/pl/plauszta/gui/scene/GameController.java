@@ -59,9 +59,9 @@ public class GameController implements Initializable {
                 BoardButton button = gameButton(pointButton);
                 grid.add(button, i, j);
 
-//                if (game.getMines()[i][j]) {
-//                    button.getStyleClass().add("debug-mine");
-//                }
+                if (game.getMines()[i][j]) {
+                    button.getStyleClass().add("debug-mine");
+                }
             }
         }
     }
@@ -159,15 +159,16 @@ public class GameController implements Initializable {
         int yButton = Integer.parseInt(coords[1]);
 
         if (game.getMines()[xButton][yButton]) {
-            buttonIsMine();
+            buttonIsMine(button);
         } else {
             updateButton(button, new Point(xButton, yButton));
         }
     }
 
-    private void buttonIsMine() {
+    private void buttonIsMine(BoardButton button) {
         if (game.getCountHits() == 0) {
-            newGame();
+            game.newGame();
+            updateBoard(button);
             return;
         }
         String timeString = time.getText();
@@ -253,10 +254,4 @@ public class GameController implements Initializable {
             result.ifPresent(name -> Records.getInstance().addRecord(new Record(name, stopTime), game.getDifficultyLevel()));
         }
     }
-
-    private void newGame() {
-        game.newGame();
-        SceneChanger.changeScene(menuBar.getScene());
-    }
-
 }

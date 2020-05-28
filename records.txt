@@ -5,10 +5,11 @@
     <easyRecords name="Seba" time="19"/>
     <easyRecords name="Jan" time="20"/>
     <easyRecords name="Anonim" time="20"/>
+    <easyRecords name="Anonim" time="25"/>
+    <easyRecords name="Anonim" time="26"/>
     <easyRecords name="Anonim" time="29"/>
     <easyRecords name="Anonim" time="39"/>
     <easyRecords name="Anonim" time="43"/>
-    <easyRecords name="Lizak" time="167"/>
     <mediumRecords name="Tomek" time="80"/>
     <mediumRecords name="Rafal" time="93"/>
     <mediumRecords name="Ziomek" time="104"/>
