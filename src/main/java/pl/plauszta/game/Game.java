@@ -1,6 +1,7 @@
 package pl.plauszta.game;
 
 import java.util.Random;
+import java.util.function.LongConsumer;
 
 public class Game {
 
@@ -10,13 +11,23 @@ public class Game {
     private int minesNumber;
     private DifficultyLevel difficultyLevel;
     private int countHits;
+    private final GameTimer timer;
 
     Random random = new Random();
 
     private Game() {
         difficultyLevel = DifficultyLevel.EASY;
         countHits = 0;
+        timer = new GameTimer();
         newGame();
+    }
+
+    public void startTimer(LongConsumer consumer) {
+        timer.start(consumer);
+    }
+
+    public long stopTimer() {
+        return timer.reset();
     }
 
     public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
