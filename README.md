@@ -12,4 +12,4 @@ parameters.
 
 After clearing the board the game is over. 
 
-![](podglądGry.png)
+![](podglądGry.PNG)
