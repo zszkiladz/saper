@@ -23,9 +23,13 @@ import pl.plauszta.gui.scene.component.dialog.EndAlert;
 import pl.plauszta.gui.scene.component.dialog.WinInputDialog;
 
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 public class GameController implements Initializable {
 
@@ -42,12 +46,21 @@ public class GameController implements Initializable {
     Game game = Game.getInstance();
     int numberOfFlags = 0;
     Text time = new Text();
+    DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         (new SceneBuilder()).prepareScene(menuBar, statisticsText, time, numberOfFlags);
 
         prepareGridOfGameBoard();
+        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        setTimeText(0);
+        game.setTimeListener(this::setTimeText);
+    }
+
+    private void setTimeText(long elapsedSeconds) {
+        final Date date = new Date(elapsedSeconds * 1000);
+        time.setText(timeFormat.format(date));
     }
 
     private void prepareGridOfGameBoard() {
@@ -70,6 +83,9 @@ public class GameController implements Initializable {
     private BoardButton gameButton(Point pointButton) {
         BoardButton button = new BoardButton(pointButton);
         button.setOnMouseClicked(event -> {
+            if (game.getCountHits() == 0) {
+                game.startTimer();
+            }
             if (event.getButton() == MouseButton.PRIMARY) {
                 updateBoard(button);
             } else if (event.getButton() == MouseButton.SECONDARY) {
@@ -80,6 +96,7 @@ public class GameController implements Initializable {
                 }
             }
             if (game.isOver()) {
+                game.stopTimer();
                 winGame();
             }
         });
@@ -172,8 +189,7 @@ public class GameController implements Initializable {
             updateBoard(button);
             return;
         }
-        String timeString = time.getText();
-        sceneAfterGameOver(timeString);
+        sceneAfterGameOver();
 
         EndAlert endAlert = new EndAlert("You lose!");
         endAlert.showAndWait();
@@ -181,8 +197,7 @@ public class GameController implements Initializable {
 
     private void updateButton(BoardButton button, Point buttonPoint) {
         if (game.getMines()[buttonPoint.getX()][buttonPoint.getY()]) {
-            String timeString = time.getText();
-            sceneAfterGameOver(timeString);
+            sceneAfterGameOver();
             EndAlert endAlert = new EndAlert("You lose!");
             endAlert.showAndWait();
         }
@@ -206,9 +221,8 @@ public class GameController implements Initializable {
         }
     }
 
-    private void sceneAfterGameOver(String timeString) {
-        statisticsText.getChildren().remove(2);
-        statisticsText.getChildren().add(new Text(timeString));
+    private void sceneAfterGameOver() {
+        game.stopTimer();
         lockButtons();
     }
 
@@ -245,7 +259,7 @@ public class GameController implements Initializable {
     private void winGame() {
         String timeString = time.getText();
         int stopTime = LocalTime.parse(timeString).toSecondOfDay();
-        sceneAfterGameOver(timeString);
+        sceneAfterGameOver();
         if (game.getDifficultyLevel() == DifficultyLevel.CUSTOM) {
             EndAlert endAlert = new EndAlert("You win!\nTime: " + timeString);
             endAlert.showAndWait();

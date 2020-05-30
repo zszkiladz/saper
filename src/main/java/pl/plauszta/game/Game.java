@@ -13,7 +13,7 @@ public class Game {
     private int countHits;
     private final GameTimer timer;
 
-    Random random = new Random();
+    private final Random random = new Random();
 
     private Game() {
         difficultyLevel = DifficultyLevel.EASY;
@@ -22,8 +22,16 @@ public class Game {
         newGame();
     }
 
-    public void startTimer(LongConsumer consumer) {
-        timer.start(consumer);
+    public void setTimeListener(LongConsumer listener) {
+        timer.setTimeListener(listener);
+    }
+
+    public void clearTimeListeners() {
+        timer.setTimeListener(null);
+    }
+
+    public void startTimer() {
+        timer.start();
     }
 
     public long stopTimer() {
