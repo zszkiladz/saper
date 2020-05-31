@@ -25,16 +25,10 @@ public class GameTimer {
         timer.scheduleAtFixedRate(task, 1000, 1000);
     }
 
-    public long reset() {
+    public void reset() {
         timer.cancel();
         timer = null;
-        final long result = elapsedSeconds;
         elapsedSeconds = 0;
-        return result;
-    }
-
-    long getElapsedSeconds() {
-        return elapsedSeconds;
     }
 
     public void setTimeListener(LongConsumer listener) {

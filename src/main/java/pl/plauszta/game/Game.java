@@ -27,16 +27,12 @@ public class Game {
         timer.setTimeListener(listener);
     }
 
-    public void clearTimeListeners() {
-        timer.setTimeListener(null);
-    }
-
     public void startTimer() {
         timer.start();
     }
 
-    public long stopTimer() {
-        return timer.reset();
+    public void stopTimer() {
+        timer.reset();
     }
 
     public void setDifficultyLevel(DifficultyLevel difficultyLevel) {

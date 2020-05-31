@@ -1,4 +1,4 @@
-## Saper
+# Saper
 
 Minesweeper - single-player game. 
 The main objective of the game is to clear board 
@@ -13,3 +13,7 @@ parameters.
 After clearing the board the game is over. 
 
 ![](podglądGry.PNG)
+
+## Developer options
+#### Additional program parameters
+- `--debug` - the mines on board are highlighted
