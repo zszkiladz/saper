@@ -14,6 +14,7 @@ public class Game {
     private final GameTimer timer;
 
     private final Random random = new Random();
+    private boolean debug;
 
     private Game() {
         difficultyLevel = DifficultyLevel.EASY;
@@ -144,6 +145,14 @@ public class Game {
 
     public int getCountHits() {
         return countHits;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public boolean isDebug() {
+        return debug;
     }
 }
 

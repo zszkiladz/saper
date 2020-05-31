@@ -73,9 +73,9 @@ public class GameController implements Initializable {
                 BoardButton button = gameButton(pointButton);
                 grid.add(button, i, j);
 
-//                if (game.getMines()[i][j]) {
-//                    button.getStyleClass().add("debug-mine");
-//                }
+                if (game.isDebug() && game.getMines()[i][j]) {
+                    button.getStyleClass().add("debug-mine");
+                }
             }
         }
     }

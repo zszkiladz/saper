@@ -14,7 +14,7 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) throws JAXBException {
         initRecords();
-        Application.launch(GuiGame.class);
+        Application.launch(GuiGame.class, args);
         saveRecords();
     }
 
